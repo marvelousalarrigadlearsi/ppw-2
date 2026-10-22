@@ -306,6 +306,9 @@
                                     @endif
 
                                 </td>
+                                <td>
+                                    {{ $kamar->tanggal_dibuat }}
+                                </td>
 
 
                                 <td>
@@ -349,7 +352,9 @@
                     </tbody>
 
                 </table>
-
+                <div class="pagination-container">
+                    {{ $kamars->links() }}
+                </div>
             </div>
 
 
@@ -374,6 +379,12 @@
         @endif
 
     </section>
+    
+    @if (session('success'))
+    <div class="alert-success">
+        {{ session('success') }}
+    </div>
+    @endif
 
 </div>
 
