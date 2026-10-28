@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\KamarController;
+use App\Models\Kamar;
 
 Route::get('/', function () {
     return redirect()->route('kamar.index');
@@ -26,3 +27,21 @@ Route::delete('/kamar/{id}', [KamarController::class, 'destroy'])
     ->name('kamar.destroy');               
 Route::delete('/kamar/{id}', [KamarController::class, 'destroy'])
     ->name('kamar.destroy');
+
+Route::get('/', function () {
+    return redirect()->route('dashboard');
+})->middleware('auth');
+
+Route::get('/dashboard', function () {
+    $totalKamar = Kamar::count();
+    $kamarTersedia = Kamar::where('status', 'Tersedia')->count();
+    $kamarTerisi = Kamar::where('status', 'Terisi')->count();
+
+    return view('dashboard', compact(
+        'totalKamar',
+        'kamarTersedia',
+        'kamarTerisi'
+    ));
+})->middleware('auth')->name('dashboard');
+
+Route::resource('kamar', KamarController::class)->middleware('auth');
