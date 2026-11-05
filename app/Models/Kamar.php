@@ -13,6 +13,7 @@ class Kamar extends Model
         'harga',
         'fasilitas',
         'status',
+        'foto',
     ];
     public function getTanggalDibuatAttribute()
 {

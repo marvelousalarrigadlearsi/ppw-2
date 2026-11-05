@@ -1,7 +1,10 @@
+/* =========================================================
+   GLOBAL
+   ========================================================= */
 * {
-    box-sizing: border-box;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {
@@ -33,6 +36,9 @@ body {
         inset 0 1px 1px rgba(255, 255, 255, .85);
 }
 
+/* =========================================================
+   HEADER
+   ========================================================= */
 .header {
     position: relative;
     overflow: hidden;
@@ -61,9 +67,7 @@ body {
     font-size: 19px;
     font-weight: bold;
     background: rgba(75, 80, 145, .8);
-    box-shadow:
-        0 8px 20px rgba(70, 75, 130, .2),
-        inset 0 1px 1px rgba(255, 255, 255, .5);
+    box-shadow: 0 8px 20px rgba(70, 75, 130, .2);
 }
 
 .brand h1 {
@@ -74,7 +78,7 @@ body {
 .brand p {
     margin-top: 3px;
     font-size: 12px;
-    color: rgba(45, 47, 70, .55);
+    color: rgba(45, 47, 70, .65);
 }
 
 .header-text {
@@ -82,21 +86,27 @@ body {
     color: rgba(45, 47, 70, .58);
 }
 
+/* =========================================================
+   FILTER
+   ========================================================= */
 .filter-box {
-    padding: 17px;
+    padding: 20px;
     margin-bottom: 18px;
     border-radius: 21px;
 }
 
 .filter-form {
-    display: flex;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr) 180px auto auto;
+    gap: 12px;
     align-items: center;
+    max-width: 950px;
+    margin: auto;
 }
 
 .search-wrapper {
     position: relative;
-    flex: 1;
+    min-width: 0;
 }
 
 .search-icon {
@@ -104,18 +114,19 @@ body {
     top: 50%;
     left: 15px;
     transform: translateY(-50%);
-    font-size: 19px;
+    font-size: 20px;
     color: rgba(45, 47, 70, .5);
+    pointer-events: none;
 }
 
 .search-wrapper input,
 .filter-form select {
     width: 100%;
-    height: 43px;
+    height: 45px;
     border: 1px solid rgba(255, 255, 255, .8);
     border-radius: 13px;
     outline: none;
-    background: rgba(255, 255, 255, .4);
+    background: rgba(255, 255, 255, .48);
     color: #303044;
     font-size: 13px;
     backdrop-filter: blur(10px);
@@ -126,8 +137,8 @@ body {
 }
 
 .filter-form select {
-    width: 170px;
     padding: 0 14px;
+    cursor: pointer;
 }
 
 .search-wrapper input::placeholder {
@@ -136,52 +147,56 @@ body {
 
 .search-wrapper input:focus,
 .filter-form select:focus {
-    border-color: rgba(100, 110, 190, .45);
-    box-shadow: 0 0 0 3px rgba(100, 110, 190, .1);
+    border-color: rgba(100, 105, 160, .65);
+    box-shadow: 0 0 0 3px rgba(100, 105, 160, .1);
 }
 
 .btn {
-    height: 43px;
-    padding: 0 19px;
-    display: flex;
+    height: 45px;
+    padding: 0 20px;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     border-radius: 13px;
     border: 1px solid rgba(255, 255, 255, .7);
+    font-family: inherit;
     font-size: 13px;
     text-decoration: none;
     cursor: pointer;
+    white-space: nowrap;
     transition: .2s ease;
 }
 
 .btn-search {
     color: white;
-    background: rgba(76, 80, 145, .82);
+    background: rgba(76, 80, 145, .85);
     box-shadow: 0 8px 20px rgba(70, 75, 130, .18);
 }
 
 .btn-search:hover {
     transform: translateY(-2px);
-    background: rgba(63, 67, 130, .9);
+    background: rgba(63, 67, 130, .95);
 }
 
 .btn-reset {
     color: #3c3c52;
-    background: rgba(255, 255, 255, .4);
+    background: rgba(255, 255, 255, .48);
 }
 
 .btn-reset:hover {
     transform: translateY(-2px);
-    background: rgba(255, 255, 255, .65);
+    background: rgba(255, 255, 255, .7);
 }
 
+/* =========================================================
+   STATISTIK
+   ========================================================= */
 .stats {
     display: grid;
     grid-template-columns: 1fr 1.65fr;
     gap: 14px;
-    height: 190px;
-    margin-bottom: 18px;
     min-height: 190px;
+    margin-bottom: 18px;
 }
 
 .stat-card {
@@ -197,7 +212,9 @@ body {
 }
 
 .stat-total {
-    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .stat-total .stat-title {
@@ -227,33 +244,29 @@ body {
 }
 
 .stat-title {
+    position: relative;
     font-size: 10px;
     margin-bottom: 5px;
-}
-
-.stat-number {
-    font-size: 30px;
-}
-
-.stat-description {
-    font-size: 9px;
 }
 
 .stat-right {
     display: grid;
     grid-template-rows: repeat(3, minmax(0, 1fr));
     gap: 14px;
-    min-height: 0;
-    height: 190px;
 }
 
 .stat-right .stat-card {
     min-height: 0;
-    align-items: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 .stat-value {
+    position: relative;
     font-size: 15px;
+    font-weight: 600;
+    color: #303047;
 }
 
 .stat-orb,
@@ -279,6 +292,9 @@ body {
     top: -35px;
 }
 
+/* =========================================================
+   TABEL
+   ========================================================= */
 .table-box {
     overflow: hidden;
     border-radius: 25px;
@@ -311,29 +327,39 @@ body {
     background: rgba(190, 200, 255, .4);
 }
 
+.add-button-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    padding: 16px 22px 0;
+}
+
 .table-wrapper {
+    width: 100%;
     overflow-x: auto;
 }
 
 table {
     width: 100%;
+    min-width: 1050px;
     border-collapse: collapse;
 }
 
 th {
-    padding: 14px 18px;
+    padding: 14px 15px;
     text-align: left;
-    background: rgba(255, 255, 255, .18);
+    white-space: nowrap;
+    background: rgba(255, 255, 255, .22);
     border-bottom: 1px solid rgba(255, 255, 255, .5);
-    color: rgba(45, 47, 70, .6);
+    color: rgba(45, 47, 70, .7);
     font-size: 11px;
 }
 
 td {
-    padding: 15px 18px;
+    padding: 13px 15px;
     border-bottom: 1px solid rgba(255, 255, 255, .35);
-    color: rgba(40, 40, 60, .8);
-    font-size: 13px;
+    color: rgba(40, 40, 60, .85);
+    font-size: 12px;
+    vertical-align: middle;
 }
 
 tbody tr {
@@ -348,6 +374,39 @@ tbody tr:last-child td {
     border-bottom: none;
 }
 
+.photo-cell {
+    width: 125px;
+}
+
+.room-photo {
+    display: block;
+    width: 105px;
+    height: 75px;
+    object-fit: cover;
+    border-radius: 11px;
+    border: 1px solid rgba(255, 255, 255, .9);
+    box-shadow: 0 5px 14px rgba(50, 55, 90, .15);
+    transition: transform .2s ease;
+}
+
+.room-photo:hover {
+    transform: scale(1.06);
+}
+
+.no-photo {
+    width: 105px;
+    height: 75px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 11px;
+    background: rgba(255, 255, 255, .4);
+    border: 1px dashed rgba(100, 100, 130, .3);
+    color: #77798b;
+    font-size: 10px;
+    text-align: center;
+}
+
 .room-number {
     font-weight: bold;
     color: #565aa6;
@@ -356,6 +415,7 @@ tbody tr:last-child td {
 .price {
     font-weight: 600;
     color: #303047;
+    white-space: nowrap;
 }
 
 .badge {
@@ -365,6 +425,7 @@ tbody tr:last-child td {
     border: 1px solid rgba(255, 255, 255, .65);
     font-size: 10px;
     font-weight: 600;
+    white-space: nowrap;
 }
 
 .badge-standard {
@@ -379,7 +440,7 @@ tbody tr:last-child td {
 
 .badge-available {
     color: #27745c;
-    background: rgba(180, 240, 210, .45);
+    background: rgba(180, 240, 215, .45);
 }
 
 .badge-filled {
@@ -387,6 +448,61 @@ tbody tr:last-child td {
     background: rgba(255, 185, 200, .42);
 }
 
+/* =========================================================
+   TOMBOL AKSI (EDIT / HAPUS)
+   ========================================================= */
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.action-buttons form {
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+}
+
+.btn-edit,
+.btn-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 55px;
+    height: 30px;
+    margin: 0;
+    padding: 0 10px;
+    border: none;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-edit {
+    background: rgba(80, 100, 180, .8);
+    color: white;
+}
+
+.btn-delete {
+    background: rgba(150, 60, 75, .8);
+    color: white;
+}
+
+.btn-edit:hover,
+.btn-delete:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.1);
+}
+
+/* =========================================================
+   EMPTY STATE & PESAN
+   ========================================================= */
 .empty {
     padding: 60px 20px;
     text-align: center;
@@ -414,121 +530,79 @@ tbody tr:last-child td {
     color: rgba(45, 47, 70, .55);
 }
 
-@media (max-width: 900px) {
-    body {
-        padding: 20px;
-    }
+.success-message {
+    margin-bottom: 18px;
+    padding: 14px 18px;
+    border-radius: 12px;
+    color: #27745c;
+    background: rgba(180, 240, 215, .55);
+    border: 1px solid rgba(39, 116, 92, .2);
+    font-size: 13px;
+}
 
-    .header {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .stats {
-        grid-template-columns: 1fr;
-        height: auto;
-    }
-
-    .stat-total {
+/* =========================================================
+   PAGINATION
+   ========================================================= */
+.pagination-container {
     display: flex;
-    align-items: center;
     justify-content: center;
-    text-align: center;
-    min-height: 190px;
-}
-
-    .stat-right {
-        min-height: 190px;
-    }
-
-    .filter-form {
-        flex-wrap: wrap;
-    }
-
-    .search-wrapper {
-        min-width: 100%;
-    }
-
-    .filter-form select {
-        flex: 1;
-    }
-}
-
-@media (max-width: 600px) {
-    body {
-        padding: 12px;
-    }
-
-    .header {
-        padding: 22px;
-    }
-
-    .header-text {
-        display: none;
-    }
-
-    .filter-form {
-        flex-direction: column;
-    }
-
-    .filter-form select,
-    .btn {
-        width: 100%;
-    }
-
-    .stat-number {
-        font-size: 36px;
-    }
-}
-.add-button-wrapper {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 15px;
-}
-
-.action-buttons {
-    display: flex;
     align-items: center;
+    margin-top: 15px;
+    padding: 16px;
+}
+
+.pagination-container nav {
+    display: flex;
     justify-content: center;
-    gap: 8px;
+    width: 100%;
 }
 
-.action-buttons form {
-    margin: 0;
+.pagination-container nav > div:first-child {
+    display: none;
 }
 
-.btn-edit,
-.btn-delete {
+.pagination-container nav > div:last-child {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.pagination-container a,
+.pagination-container span {
     display: inline-flex;
-    align-items: center;
     justify-content: center;
-    min-width: 55px;
-    height: 30px;
-    padding: 0 10px;
-    border: none;
-    border-radius: 8px;
-    font-size: 11px;
-    font-weight: 600;
+    align-items: center;
+    min-width: 38px;
+    min-height: 38px;
+    padding: 8px 12px;
+    border: 1px solid rgba(255, 255, 255, .8);
+    border-radius: 10px;
+    color: #475569;
+    background: rgba(255, 255, 255, .5);
+    font-size: 13px;
     text-decoration: none;
-    cursor: pointer;
 }
 
-.btn-edit {
-    background: rgba(80, 100, 180, 0.7);
+.pagination-container a:hover {
     color: white;
+    background: #6478f5;
 }
 
-.btn-delete {
-    background: rgba(190, 60, 75, 0.7);
+.pagination-container span[aria-current="page"] {
     color: white;
+    background: #6478f5;
+    border-color: #6478f5;
 }
 
-.btn-edit:hover,
-.btn-delete:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.1);
+.pagination-container span[aria-disabled="true"] {
+    color: #a5a9b5;
+    cursor: not-allowed;
 }
+
+/* =========================================================
+   HALAMAN CREATE KAMAR
+   ========================================================= */
 .create-kamar-container {
     width: 100%;
     max-width: 850px;
@@ -709,6 +783,176 @@ tbody tr:last-child td {
     line-height: 1.6;
 }
 
+/* =========================================================
+   HALAMAN FORM (EDIT) - SEMUA DI-SCOPE KE body.form-page
+   Pakai: <body class="form-page"> di Blade halaman edit
+   ========================================================= */
+.form-page {
+    padding: 40px 20px;
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    color: #252525;
+}
+
+.form-page h1 {
+    max-width: 650px;
+    margin: 0 auto 24px;
+    font-size: 28px;
+    font-weight: 700;
+    color: #252525;
+}
+
+.form-page form {
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 32px;
+    background: #ffffff;
+    border: 1px solid #e8e8e8;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+}
+
+.form-page label {
+    display: block;
+    margin: 20px 0 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333333;
+}
+
+.form-page input[type="text"],
+.form-page input[type="number"],
+.form-page select {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #dcdfe4;
+    border-radius: 9px;
+    background: #ffffff;
+    color: #252525;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-page input[type="text"]:focus,
+.form-page input[type="number"]:focus,
+.form-page select:focus {
+    border-color: #860118;
+    box-shadow: 0 0 0 3px rgba(134, 1, 24, 0.08);
+}
+
+.form-page input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    border: 1px dashed #c8cbd0;
+    border-radius: 9px;
+    background: #fafafa;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.form-page input[type="file"]::file-selector-button {
+    padding: 8px 12px;
+    margin-right: 12px;
+    border: none;
+    border-radius: 6px;
+    background: #860118;
+    color: white;
+    cursor: pointer;
+}
+
+.form-page small {
+    display: block;
+    margin-top: 8px;
+    color: #777777;
+    font-size: 12px;
+}
+
+.form-page img {
+    display: block;
+    width: 200px;
+    height: 140px;
+    margin-top: 8px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid #e5e5e5;
+}
+
+.form-page p {
+    margin-top: 8px;
+    color: #888888;
+    font-size: 13px;
+}
+
+.form-page button[type="submit"] {
+    width: 100%;
+    margin-top: 30px;
+    padding: 13px;
+    border: none;
+    border-radius: 9px;
+    background: #860118;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.form-page button[type="submit"]:hover {
+    background: #680014;
+    transform: translateY(-1px);
+}
+
+.form-page div:has(> ul) {
+    max-width: 650px;
+    margin: 0 auto 16px;
+    padding: 14px 18px;
+    border: 1px solid #f1b8b8;
+    border-radius: 9px;
+    background: #fff0f0;
+    color: #b42318;
+}
+
+.form-page div:has(> ul) ul {
+    padding-left: 18px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+@media (max-width: 900px) {
+    body {
+        padding: 20px;
+    }
+
+    .header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr;
+    }
+
+    .stat-total {
+        min-height: 190px;
+    }
+
+    .stat-right {
+        min-height: 190px;
+    }
+
+    .filter-form {
+        grid-template-columns: minmax(0, 1fr) 170px;
+    }
+
+    .search-wrapper {
+        grid-column: 1 / -1;
+    }
+}
+
 @media (max-width: 640px) {
     .create-kamar-container {
         margin: 20px auto;
@@ -729,60 +973,55 @@ tbody tr:last-child td {
         width: 100%;
     }
 }
-.pagination-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 24px;
-    padding: 16px 0;
-}
 
-.pagination-container nav {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
+@media (max-width: 600px) {
+    body {
+        padding: 12px;
+    }
 
-.pagination-container nav > div:first-child {
-    display: none;
-}
+    .form-page {
+        padding: 24px 14px;
+    }
 
-.pagination-container nav > div:last-child {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 6px;
-}
+    .form-page h1 {
+        font-size: 23px;
+    }
 
-.pagination-container a,
-.pagination-container span {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    min-width: 38px;
-    min-height: 38px;
-    padding: 8px 12px;
-    border: 1px solid #e2e8f0;
-    border-radius: 10px;
-    color: #475569;
-    background: rgba(255, 255, 255, 0.8);
-    font-size: 13px;
-    text-decoration: none;
-}
+    .form-page form {
+        padding: 22px 18px;
+    }
 
-.pagination-container a:hover {
-    color: #ffffff;
-    background: #6478f5;
-    border-color: #6478f5;
-}
+    .form-page img {
+        width: 100%;
+        max-width: 250px;
+    }
 
-.pagination-container span[aria-current="page"] {
-    color: #ffffff;
-    background: #6478f5;
-    border-color: #6478f5;
-}
+    .header {
+        padding: 22px;
+    }
 
-.pagination-container span[aria-disabled="true"] {
-    color: #cbd5e1;
-    cursor: not-allowed;
+    .header-text {
+        display: none;
+    }
+
+    .filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .search-wrapper {
+        grid-column: auto;
+    }
+
+    .filter-form select,
+    .filter-form .btn {
+        width: 100%;
+    }
+
+    .stat-number {
+        font-size: 36px;
+    }
+
+    .table-header {
+        padding: 18px;
+    }
 }

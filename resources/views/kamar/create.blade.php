@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -26,7 +27,11 @@
             </div>
         @endif
 
-        <form action="{{ route('kamar.store') }}" method="POST" class="create-kamar-form">
+        <form action="{{ route('kamar.store') }}"
+              method="POST"
+              enctype="multipart/form-data"
+              class="create-kamar-form">
+
             @csrf
 
             <div class="form-group">
@@ -69,6 +74,17 @@
                     name="fasilitas"
                     placeholder="Contoh: Wi-Fi, kamar mandi dalam, lemari"
                 >{{ old('fasilitas') }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="foto">Foto Kamar</label>
+                <input
+                    type="file"
+                    id="foto"
+                    name="foto"
+                    accept="image/jpeg,image/png,image/webp"
+                >
+                <span class="form-hint">Format JPG, PNG, atau WEBP. Maksimal 2 MB.</span>
             </div>
 
             <div class="form-group">

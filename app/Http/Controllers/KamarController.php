@@ -4,106 +4,188 @@ namespace App\Http\Controllers;
 
 use App\Models\Kamar;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class KamarController extends Controller
 {
     public function index(Request $request)
-{
-    $query = Kamar::query();
+    {
+        $query = Kamar::query();
 
-    // Filter berdasarkan tipe kamar
-    if ($request->filled('tipe_kamar')) {
-        $query->where('tipe_kamar', $request->tipe_kamar);
+        // Filter berdasarkan tipe kamar
+        if ($request->filled('tipe_kamar')) {
+            $query->where('tipe_kamar', $request->tipe_kamar);
+        }
+
+        // Pencarian berdasarkan nomor kamar
+        if ($request->filled('search')) {
+            $query->where(
+                'nomor_kamar',
+                'like',
+                '%' . $request->search . '%'
+            );
+        }
+
+        // Pagination 5 kamar per halaman
+        $kamars = $query->latest()->paginate(5)->withQueryString();
+
+        // Statistik seluruh kamar
+        $totalKamar = Kamar::count();
+        $totalHarga = Kamar::sum('harga');
+        $hargaTertinggi = Kamar::max('harga');
+        $hargaTerendah = Kamar::min('harga');
+
+        return view('kamar.index', compact(
+            'kamars',
+            'totalKamar',
+            'totalHarga',
+            'hargaTertinggi',
+            'hargaTerendah'
+        ));
     }
 
-    // Pencarian berdasarkan nomor kamar
-    if ($request->filled('search')) {
-        $query->where(
-            'nomor_kamar',
-            'like',
-            '%' . $request->search . '%'
-        );
-    }
-
-    // Pagination 5 kamar per halaman
-    $kamars = $query->latest()->paginate(5)->withQueryString();
-
-    // Statistik seluruh kamar
-    $totalKamar = Kamar::count();
-    $totalHarga = Kamar::sum('harga');
-    $hargaTertinggi = Kamar::max('harga');
-    $hargaTerendah = Kamar::min('harga');
-
-    return view('kamar.index', compact(
-        'kamars',
-        'totalKamar',
-        'totalHarga',
-        'hargaTertinggi',
-        'hargaTerendah'
-    ));
-}
     public function create()
     {
         return view('kamar.create');
     }
+
     public function edit($id)
+    {
+        $kamar = Kamar::findOrFail($id);
+
+        return view('kamar.edit', compact('kamar'));
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'nomor_kamar' => 'required|unique:kamars,nomor_kamar',
+            'tipe_kamar' => 'required',
+            'harga' => 'required|numeric|min:0',
+            'fasilitas' => 'required',
+            'status' => 'required',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ], [
+            'nomor_kamar.required' => 'Nomor kamar wajib diisi.',
+            'nomor_kamar.unique' => 'Nomor kamar sudah digunakan.',
+            'tipe_kamar.required' => 'Tipe kamar wajib dipilih.',
+            'harga.required' => 'Harga kamar wajib diisi.',
+            'harga.numeric' => 'Harga kamar harus berupa angka.',
+            'harga.min' => 'Harga kamar tidak boleh negatif.',
+            'fasilitas.required' => 'Fasilitas kamar wajib diisi.',
+            'status.required' => 'Status kamar wajib dipilih.',
+            'foto.image' => 'File harus berupa gambar.',
+            'foto.mimes' => 'Format foto harus JPG, JPEG, PNG, atau WEBP.',
+            'foto.max' => 'Ukuran foto maksimal 2 MB.',
+        ]);
+
+        if ($request->hasFile('foto')) {
+            $validated['foto'] = $this->simpanFoto($request->file('foto'));
+        }
+
+        Kamar::create($validated);
+
+        return redirect()->route('kamar.index');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $kamar = Kamar::findOrFail($id);
+
+        $validated = $request->validate([
+            'nomor_kamar' => [
+                'required',
+                Rule::unique('kamars', 'nomor_kamar')->ignore($kamar->id),
+            ],
+            'tipe_kamar' => 'required',
+            'harga' => 'required|numeric|min:0',
+            'fasilitas' => 'required',
+            'status' => 'required',
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+        ], [
+            'nomor_kamar.required' => 'Nomor kamar wajib diisi.',
+            'nomor_kamar.unique' => 'Nomor kamar sudah digunakan.',
+            'tipe_kamar.required' => 'Tipe kamar wajib dipilih.',
+            'harga.required' => 'Harga kamar wajib diisi.',
+            'harga.numeric' => 'Harga kamar harus berupa angka.',
+            'harga.min' => 'Harga kamar tidak boleh negatif.',
+            'fasilitas.required' => 'Fasilitas kamar wajib diisi.',
+            'status.required' => 'Status kamar wajib dipilih.',
+            'foto.image' => 'File harus berupa gambar.',
+            'foto.mimes' => 'Format foto harus JPG, JPEG, PNG, atau WEBP.',
+            'foto.max' => 'Ukuran foto maksimal 2 MB.',
+        ]);
+
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama beserta thumbnail-nya
+            $this->hapusFoto($kamar->foto);
+
+            $validated['foto'] = $this->simpanFoto($request->file('foto'));
+        }
+
+        $kamar->update($validated);
+
+        return redirect()->route('kamar.index');
+    }
+
+    public function destroy(Kamar $kamar)
+    {
+        // Hapus file foto dan thumbnail sebelum record dihapus
+        $this->hapusFoto($kamar->foto);
+
+        $kamar->delete();
+
+        return redirect()->route('kamar.index')
+            ->with('success', 'Kamar berhasil dihapus.');
+    }
+
+    /**
+     * Simpan foto asli ke foto-kamar/ dan buat thumbnail 300x300
+     * di foto-kamar/thumbnails/ dengan nama file yang sama.
+     * Mengembalikan path foto asli untuk disimpan di database.
+     */
+private function simpanFoto($file): string
 {
-    $kamar = Kamar::findOrFail($id);
+    // Foto asli
+    $path = $file->store('foto-kamar', 'public');
 
-    return view('kamar.edit', compact('kamar'));
-}
+    // Thumbnail
+    $manager = new ImageManager(new Driver());
+    $thumbnail = $manager->read($file->getRealPath())->cover(300, 300);
 
-   public function store(Request $request)
-{
-    $validated = $request->validate([
-        'nomor_kamar' => 'required|unique:kamars,nomor_kamar',
-        'tipe_kamar' => 'required',
-        'harga' => 'required|numeric|min:0',
-        'fasilitas' => 'required',
-        'status' => 'required',
-    ], [
-        'nomor_kamar.required' => 'Nomor kamar wajib diisi.',
-        'nomor_kamar.unique' => 'Nomor kamar sudah digunakan.',
-        'tipe_kamar.required' => 'Tipe kamar wajib dipilih.',
-        'harga.required' => 'Harga kamar wajib diisi.',
-        'harga.numeric' => 'Harga kamar harus berupa angka.',
-        'harga.min' => 'Harga kamar tidak boleh negatif.',
-        'fasilitas.required' => 'Fasilitas kamar wajib diisi.',
-        'status.required' => 'Status kamar wajib dipilih.',
-    ]);
+    // Encode sesuai ekstensi file
+    $ekstensi = strtolower($file->getClientOriginalExtension());
 
-    Kamar::create($validated);
+    $hasil = match ($ekstensi) {
+        'png'  => $thumbnail->toPng(),
+        'webp' => $thumbnail->toWebp(80),
+        default => $thumbnail->toJpeg(80),
+    };
 
-    return redirect()->route('kamar.index');
-}
-    public function update(Request $request, Kamar $kamar)
-{
-    $validated = $request->validate([
-        'nomor_kamar' => 'required|unique:kamars,nomor_kamar,' . $kamar->id,
-        'tipe_kamar' => 'required',
-        'harga' => 'required|numeric|min:0',
-        'fasilitas' => 'required',
-        'status' => 'required',
-    ], [
-        'nomor_kamar.required' => 'Nomor kamar wajib diisi.',
-        'nomor_kamar.unique' => 'Nomor kamar sudah digunakan.',
-        'tipe_kamar.required' => 'Tipe kamar wajib dipilih.',
-        'harga.required' => 'Harga kamar wajib diisi.',
-        'harga.numeric' => 'Harga kamar harus berupa angka.',
-        'harga.min' => 'Harga kamar tidak boleh negatif.',
-        'fasilitas.required' => 'Fasilitas kamar wajib diisi.',
-        'status.required' => 'Status kamar wajib dipilih.',
-    ]);
+    Storage::disk('public')->put(
+        'foto-kamar/thumbnails/' . basename($path),
+        (string) $hasil
+    );
 
-    $kamar->update($validated);
+    return $path;
 
-    return redirect()->route('kamar.index');
-}
-public function destroy(Kamar $kamar)
-{
-    $kamar->delete();
+    }
 
-    return redirect()->route('kamar.index')
-        ->with('success', 'Kamar berhasil dihapus.');
-}
+    /**
+     * Hapus foto asli dan thumbnail dari storage (jika ada).
+     */
+    private function hapusFoto(?string $path): void
+    {
+        if (! $path) {
+            return;
+        }
+
+        Storage::disk('public')->delete([
+            $path,
+            'foto-kamar/thumbnails/' . basename($path),
+        ]);
+    }
 }

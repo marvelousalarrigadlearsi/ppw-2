@@ -1,395 +1,229 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KosJos - Data Kamar</title>
+    <title>Data Kamar - KosJos</title>
     <link rel="stylesheet" href="{{ asset('css/kamar.css') }}">
 </head>
-
 <body>
 
 <div class="container">
 
     <header class="header glass">
         <div class="brand">
-            <div class="brand-icon">
-                K
-            </div>
-
+            <div class="brand-icon">K</div>
             <div>
                 <h1>KosJos</h1>
                 <p>Pengelolaan Data Kamar Kos</p>
             </div>
         </div>
-
         <div class="header-text">
             Kelola dan pantau informasi kamar kos dengan mudah.
         </div>
     </header>
 
+    @if (session('success'))
+        <div class="success-message">
+            {{ session('success') }}
+        </div>
+    @endif
 
     <section class="filter-box glass">
-        <form
-            action="{{ route('kamar.index') }}"
-            method="GET"
-            class="filter-form"
-        >
+        <form action="{{ route('kamar.index') }}" method="GET" class="filter-form">
 
             <div class="search-wrapper">
                 <span class="search-icon">⌕</span>
-
                 <input
                     type="text"
                     name="search"
-                    value="{{ request('search') }}"
                     placeholder="Cari nomor kamar..."
+                    value="{{ request('search') }}"
                 >
             </div>
 
-
             <select name="tipe_kamar">
-                <option value="">
-                    Semua Tipe
-                </option>
-
-                <option
-                    value="Standard"
-                    {{ request('tipe_kamar') == 'Standard' ? 'selected' : '' }}
-                >
+                <option value="">Semua Tipe</option>
+                <option value="Standard" {{ request('tipe_kamar') == 'Standard' ? 'selected' : '' }}>
                     Standard
                 </option>
-
-                <option
-                    value="Deluxe"
-                    {{ request('tipe_kamar') == 'Deluxe' ? 'selected' : '' }}
-                >
+                <option value="Deluxe" {{ request('tipe_kamar') == 'Deluxe' ? 'selected' : '' }}>
                     Deluxe
                 </option>
             </select>
 
+            <button type="submit" class="btn btn-search">Cari</button>
 
-            <button
-                type="submit"
-                class="btn btn-search"
-            >
-                Cari
-            </button>
-
-
-            <a
-                href="{{ route('kamar.index') }}"
-                class="btn btn-reset"
-            >
-                Reset
-            </a>
+            <a href="{{ route('kamar.index') }}" class="btn btn-reset">Reset</a>
 
         </form>
     </section>
 
-
     <section class="stats">
 
         <div class="stat-card stat-total glass">
-
-            <div class="stat-content">
-
-                <span class="stat-title">
-                    Total Kamar
-                </span>
-
-                <strong class="stat-number">
-                    {{ $totalKamar }}
-                </strong>
-
-                <span class="stat-description">
-                    Kamar terdaftar
-                </span>
-
-            </div>
-
             <div class="stat-orb"></div>
-
+            <div class="stat-content">
+                <div class="stat-title">Total Kamar</div>
+                <div class="stat-number">{{ $totalKamar }}</div>
+                <div class="stat-description">Kamar terdaftar</div>
+            </div>
         </div>
-
 
         <div class="stat-right">
 
             <div class="stat-card glass">
-
-                <div class="stat-content">
-
-                    <span class="stat-title">
-                        Total Harga
-                    </span>
-
-                    <strong class="stat-value">
-                        Rp {{ number_format($totalHarga, 0, ',', '.') }}
-                    </strong>
-
-                </div>
-
                 <div class="small-orb"></div>
-
+                <div class="stat-title">Total Harga</div>
+                <div class="stat-value">
+                    Rp {{ number_format($totalHarga, 0, ',', '.') }}
+                </div>
             </div>
 
-
             <div class="stat-card glass">
-
-                <div class="stat-content">
-
-                    <span class="stat-title">
-                        Harga Tertinggi
-                    </span>
-
-                    <strong class="stat-value">
-                        Rp {{ number_format($hargaTertinggi, 0, ',', '.') }}
-                    </strong>
-
-                </div>
-
                 <div class="small-orb"></div>
-
+                <div class="stat-title">Harga Tertinggi</div>
+                <div class="stat-value">
+                    Rp {{ number_format($hargaTertinggi ?? 0, 0, ',', '.') }}
+                </div>
             </div>
 
-
             <div class="stat-card glass">
-
-                <div class="stat-content">
-
-                    <span class="stat-title">
-                        Harga Terendah
-                    </span>
-
-                    <strong class="stat-value">
-                        Rp {{ number_format($hargaTerendah, 0, ',', '.') }}
-                    </strong>
-
-                </div>
-
                 <div class="small-orb"></div>
-
+                <div class="stat-title">Harga Terendah</div>
+                <div class="stat-value">
+                    Rp {{ number_format($hargaTerendah ?? 0, 0, ',', '.') }}
+                </div>
             </div>
 
         </div>
-
     </section>
-
 
     <section class="table-box glass">
 
         <div class="table-header">
-
             <div>
                 <h2>Daftar Kamar</h2>
-
-                <p>
-                    Informasi kamar yang tersedia pada KosJos
-                </p>
+                <p>Informasi kamar yang tersedia pada KosJos</p>
             </div>
-
-            <div class="room-count">
-                {{ $kamars->count() }} data
-            </div>
-
+            <span class="room-count">{{ $kamars->total() }} data</span>
         </div>
-
 
         <div class="add-button-wrapper">
-
-            <a
-                href="{{ route('kamar.create') }}"
-                class="btn btn-add"
-            >
-                Tambah Kamar
+            <a href="{{ route('kamar.create') }}" class="btn btn-search">
+                + Tambah Kamar
             </a>
-
         </div>
 
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Foto</th>
+                        <th>Nomor Kamar</th>
+                        <th>Tipe</th>
+                        <th>Harga</th>
+                        <th>Fasilitas</th>
+                        <th>Status</th>
+                        <th>Tanggal</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
 
-        @if ($kamars->count() > 0)
-
-            <div class="table-wrapper">
-
-                <table>
-
-                    <thead>
-
+                <tbody>
+                    @forelse ($kamars as $index => $kamar)
                         <tr>
+                            <td>{{ $kamars->firstItem() + $index }}</td>
 
-                            <th>No</th>
+                            <td class="photo-cell">
+    @if ($kamar->foto)
+        <img
+               src="{{ asset('storage/foto-kamar/thumbnails/' . basename($kamar->foto)) }}"
+            alt="Foto {{ $kamar->nomor_kamar }}"
+            class="room-photo"
+        >
+    @else
+        <div class="no-photo">Belum ada foto</div>
+    @endif
+</td>
 
-                            <th>Nomor Kamar</th>
+                            <td>
+                                <span class="room-number">
+                                    {{ $kamar->nomor_kamar }}
+                                </span>
+                            </td>
 
-                            <th>Tipe</th>
+                            <td>
+                                <span class="badge {{ $kamar->tipe_kamar == 'Standard' ? 'badge-standard' : 'badge-deluxe' }}">
+                                    {{ $kamar->tipe_kamar }}
+                                </span>
+                            </td>
 
-                            <th>Harga</th>
+                            <td>
+                                <span class="price">
+                                    Rp {{ number_format($kamar->harga, 0, ',', '.') }}
+                                </span>
+                            </td>
 
-                            <th>Fasilitas</th>
+                            <td>{{ $kamar->fasilitas }}</td>
 
-                            <th>Status</th>
+                            <td>
+                                <span class="badge {{ $kamar->status == 'Tersedia' ? 'badge-available' : 'badge-filled' }}">
+                                    {{ $kamar->status }}
+                                </span>
+                            </td>
 
-                            <th>Aksi</th>
+                            <td>
+                                {{ $kamar->created_at ? $kamar->created_at->format('d-m-Y H:i') : '-' }}
+                            </td>
 
+                            <td>
+                                <div class="action-buttons">
+                                    <a
+                                        href="{{ route('kamar.edit', $kamar->id) }}"
+                                        class="btn-edit"
+                                    >
+                                        Edit
+                                    </a>
+
+                                    <form
+                                        action="{{ route('kamar.destroy', $kamar->id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Yakin ingin menghapus kamar ini?')"
+                                    >
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit" class="btn-delete">
+                                            Hapus
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
                         </tr>
+                    @empty
+                        <tr>
+                            <td colspan="9">
+                                <div class="empty">
+                                    <div class="empty-icon">⌕</div>
+                                    <h3>Data kamar tidak ditemukan</h3>
+                                    <p>Coba ubah kata pencarian atau filter tipe kamar.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
 
-                    </thead>
-
-
-                    <tbody>
-
-                        @foreach ($kamars as $index => $kamar)
-
-                            <tr>
-
-                                <td>
-                                    {{ $index + 1 }}
-                                </td>
-
-
-                                <td>
-
-                                    <span class="room-number">
-                                        {{ $kamar->nomor_kamar }}
-                                    </span>
-
-                                </td>
-
-
-                                <td>
-
-                                    @if ($kamar->tipe_kamar === 'Standard')
-
-                                        <span class="badge badge-standard">
-                                            Standard
-                                        </span>
-
-                                    @else
-
-                                        <span class="badge badge-deluxe">
-                                            Deluxe
-                                        </span>
-
-                                    @endif
-
-                                </td>
-
-
-                                <td>
-
-                                    <span class="price">
-                                        Rp {{ number_format($kamar->harga, 0, ',', '.') }}
-                                    </span>
-
-                                </td>
-
-
-                                <td>
-                                    {{ $kamar->fasilitas }}
-                                </td>
-
-
-                                <td>
-
-                                    @if ($kamar->status === 'Tersedia')
-
-                                        <span class="badge badge-available">
-                                            Tersedia
-                                        </span>
-
-                                    @else
-
-                                        <span class="badge badge-filled">
-                                            Terisi
-                                        </span>
-
-                                    @endif
-
-                                </td>
-                                <td>
-                                    {{ $kamar->tanggal_dibuat }}
-                                </td>
-
-
-                                <td>
-
-                                    <div class="action-buttons">
-
-                                        <a
-                                            href="{{ route('kamar.edit', $kamar->id) }}"
-                                            class="btn-edit"
-                                        >
-                                            Edit
-                                        </a>
-
-
-                                        <form
-                                            action="{{ route('kamar.destroy', $kamar->id) }}"
-                                            method="POST"
-                                        >
-
-                                            @csrf
-
-                                            @method('DELETE')
-
-                                            <button
-                                                type="submit"
-                                                class="btn-delete"
-                                            >
-                                                Hapus
-                                            </button>
-
-                                        </form>
-
-                                    </div>
-
-                                </td>
-
-                            </tr>
-
-                        @endforeach
-
-                    </tbody>
-
-                </table>
-                <div class="pagination-container">
-                    {{ $kamars->links() }}
-                </div>
-            </div>
-
-
-        @else
-
-            <div class="empty">
-
-                <div class="empty-icon">
-                    ⌕
-                </div>
-
-                <h3>
-                    Data tidak ditemukan
-                </h3>
-
-                <p>
-                    Tidak ada kamar yang sesuai dengan pencarian.
-                </p>
-
-            </div>
-
-        @endif
+        <div class="pagination-container">
+            {{ $kamars->links() }}
+        </div>
 
     </section>
-    
-    @if (session('success'))
-    <div class="alert-success">
-        {{ session('success') }}
-    </div>
-    @endif
-
 </div>
-
-
-<script src="{{ asset('js/kamar.js') }}"></script>
 
 </body>
 </html>
