@@ -1,4 +1,24 @@
+Claude
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Index.blade · PHP
+ 
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -8,9 +28,9 @@
     <link rel="stylesheet" href="{{ asset('css/kamar.css') }}">
 </head>
 <body>
-
+ 
 <div class="container">
-
+ 
     <header class="header glass">
         <div class="brand">
             <div class="brand-icon">K</div>
@@ -23,16 +43,16 @@
             Kelola dan pantau informasi kamar kos dengan mudah.
         </div>
     </header>
-
+ 
     @if (session('success'))
         <div class="success-message">
             {{ session('success') }}
         </div>
     @endif
-
+ 
     <section class="filter-box glass">
         <form action="{{ route('kamar.index') }}" method="GET" class="filter-form">
-
+ 
             <div class="search-wrapper">
                 <span class="search-icon">⌕</span>
                 <input
@@ -42,7 +62,7 @@
                     value="{{ request('search') }}"
                 >
             </div>
-
+ 
             <select name="tipe_kamar">
                 <option value="">Semua Tipe</option>
                 <option value="Standard" {{ request('tipe_kamar') == 'Standard' ? 'selected' : '' }}>
@@ -52,16 +72,16 @@
                     Deluxe
                 </option>
             </select>
-
+ 
             <button type="submit" class="btn btn-search">Cari</button>
-
+ 
             <a href="{{ route('kamar.index') }}" class="btn btn-reset">Reset</a>
-
+ 
         </form>
     </section>
-
+ 
     <section class="stats">
-
+ 
         <div class="stat-card stat-total glass">
             <div class="stat-orb"></div>
             <div class="stat-content">
@@ -70,9 +90,9 @@
                 <div class="stat-description">Kamar terdaftar</div>
             </div>
         </div>
-
+ 
         <div class="stat-right">
-
+ 
             <div class="stat-card glass">
                 <div class="small-orb"></div>
                 <div class="stat-title">Total Harga</div>
@@ -80,7 +100,7 @@
                     Rp {{ number_format($totalHarga, 0, ',', '.') }}
                 </div>
             </div>
-
+ 
             <div class="stat-card glass">
                 <div class="small-orb"></div>
                 <div class="stat-title">Harga Tertinggi</div>
@@ -88,7 +108,7 @@
                     Rp {{ number_format($hargaTertinggi ?? 0, 0, ',', '.') }}
                 </div>
             </div>
-
+ 
             <div class="stat-card glass">
                 <div class="small-orb"></div>
                 <div class="stat-title">Harga Terendah</div>
@@ -96,12 +116,12 @@
                     Rp {{ number_format($hargaTerendah ?? 0, 0, ',', '.') }}
                 </div>
             </div>
-
+ 
         </div>
     </section>
-
+ 
     <section class="table-box glass">
-
+ 
         <div class="table-header">
             <div>
                 <h2>Daftar Kamar</h2>
@@ -109,13 +129,15 @@
             </div>
             <span class="room-count">{{ $kamars->total() }} data</span>
         </div>
-
-        <div class="add-button-wrapper">
-            <a href="{{ route('kamar.create') }}" class="btn btn-search">
-                + Tambah Kamar
-            </a>
-        </div>
-
+ 
+        @if (Auth::check() && Auth::user()->level == 'admin')
+            <div class="add-button-wrapper">
+                <a href="{{ route('kamar.create') }}" class="btn btn-search">
+                    + Tambah Kamar
+                </a>
+            </div>
+        @endif
+ 
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -128,15 +150,17 @@
                         <th>Fasilitas</th>
                         <th>Status</th>
                         <th>Tanggal</th>
-                        <th>Aksi</th>
+                        @if (Auth::check() && Auth::user()->level == 'admin')
+                            <th>Aksi</th>
+                        @endif
                     </tr>
                 </thead>
-
+ 
                 <tbody>
                     @forelse ($kamars as $index => $kamar)
                         <tr>
                             <td>{{ $kamars->firstItem() + $index }}</td>
-
+ 
                             <td class="photo-cell">
     @if ($kamar->foto)
         <img
@@ -148,64 +172,66 @@
         <div class="no-photo">Belum ada foto</div>
     @endif
 </td>
-
+ 
                             <td>
                                 <span class="room-number">
                                     {{ $kamar->nomor_kamar }}
                                 </span>
                             </td>
-
+ 
                             <td>
                                 <span class="badge {{ $kamar->tipe_kamar == 'Standard' ? 'badge-standard' : 'badge-deluxe' }}">
                                     {{ $kamar->tipe_kamar }}
                                 </span>
                             </td>
-
+ 
                             <td>
                                 <span class="price">
                                     Rp {{ number_format($kamar->harga, 0, ',', '.') }}
                                 </span>
                             </td>
-
+ 
                             <td>{{ $kamar->fasilitas }}</td>
-
+ 
                             <td>
                                 <span class="badge {{ $kamar->status == 'Tersedia' ? 'badge-available' : 'badge-filled' }}">
                                     {{ $kamar->status }}
                                 </span>
                             </td>
-
+ 
                             <td>
                                 {{ $kamar->created_at ? $kamar->created_at->format('d-m-Y H:i') : '-' }}
                             </td>
-
-                            <td>
-                                <div class="action-buttons">
-                                    <a
-                                        href="{{ route('kamar.edit', $kamar->id) }}"
-                                        class="btn-edit"
-                                    >
-                                        Edit
-                                    </a>
-
-                                    <form
-                                        action="{{ route('kamar.destroy', $kamar->id) }}"
-                                        method="POST"
-                                        onsubmit="return confirm('Yakin ingin menghapus kamar ini?')"
-                                    >
-                                        @csrf
-                                        @method('DELETE')
-
-                                        <button type="submit" class="btn-delete">
-                                            Hapus
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
+ 
+                            @if (Auth::check() && Auth::user()->level == 'admin')
+                                <td>
+                                    <div class="action-buttons">
+                                        <a
+                                            href="{{ route('kamar.edit', $kamar->id) }}"
+                                            class="btn-edit"
+                                        >
+                                            Edit
+                                        </a>
+ 
+                                        <form
+                                            action="{{ route('kamar.destroy', $kamar->id) }}"
+                                            method="POST"
+                                            onsubmit="return confirm('Yakin ingin menghapus kamar ini?')"
+                                        >
+                                            @csrf
+                                            @method('DELETE')
+ 
+                                            <button type="submit" class="btn-delete">
+                                                Hapus
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            @endif
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9">
+                            <td colspan="{{ Auth::check() && Auth::user()->level == 'admin' ? 9 : 8 }}">
                                 <div class="empty">
                                     <div class="empty-icon">⌕</div>
                                     <h3>Data kamar tidak ditemukan</h3>
@@ -217,13 +243,15 @@
                 </tbody>
             </table>
         </div>
-
+ 
         <div class="pagination-container">
             {{ $kamars->links() }}
         </div>
-
+ 
     </section>
 </div>
-
+ 
 </body>
 </html>
+ 
+

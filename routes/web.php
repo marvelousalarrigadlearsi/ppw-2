@@ -5,11 +5,10 @@ use App\Http\Controllers\UserController;
 use App\Models\Kamar;
 use Illuminate\Support\Facades\Route;
 
-// Semua halaman di dalam grup ini hanya bisa dibuka setelah login.
 Route::middleware('auth')->group(function () {
 
     Route::get('/', function () {
-        return redirect()->route('kamar.index');
+        return redirect()->route('dashboard');
     });
 
     Route::get('/dashboard', function () {
@@ -24,10 +23,12 @@ Route::middleware('auth')->group(function () {
         ));
     })->name('dashboard');
 
-    Route::resource('kamar', KamarController::class)->except('show');
+    // Semua user yang login: hanya melihat daftar & ketersediaan kamar.
+    Route::get('/kamar', [KamarController::class, 'index'])->name('kamar.index');
 
-    // Khusus admin: kelola data users.
+    // Khusus admin: kelola kamar dan users.
     Route::middleware('admin')->group(function () {
+        Route::resource('kamar', KamarController::class)->except(['index', 'show']);
         Route::resource('users', UserController::class)->except('show');
     });
 });
