@@ -16,8 +16,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->call([
-            KamarSeeder::class,
-        ]);
+        User::updateOrCreate(
+    ['email' => 'admin@kosjos.test'],
+    [
+        'name' => 'Admin KosJos',
+        'password' => 'password',
+        'level' => 'admin',
+    ]
+);
+        $this->call(KamarSeeder::class);
     }
 }

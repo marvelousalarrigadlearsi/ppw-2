@@ -107,7 +107,13 @@
             .stats { grid-template-columns: 1fr; }
             .actions { grid-template-columns: 1fr; }
         }
-    </style>
+        
+    .nav { display: flex; gap: 6px; flex-wrap: wrap; }
+    .nav a { text-decoration: none; color: #4a5a50; font-size: 14px; font-weight: 600; padding: 9px 14px; border-radius: 10px; }
+    .nav a:hover, .nav a.active { background: #e9f1ec; color: #214e39; }
+</style>
+@include('partials.navbar')
+    
 </head>
 <body>
     <header class="topbar">

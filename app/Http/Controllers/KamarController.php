@@ -15,12 +15,12 @@ class KamarController extends Controller
     {
         $query = Kamar::query();
 
-        // Filter berdasarkan tipe kamar
+        
         if ($request->filled('tipe_kamar')) {
             $query->where('tipe_kamar', $request->tipe_kamar);
         }
 
-        // Pencarian berdasarkan nomor kamar
+        
         if ($request->filled('search')) {
             $query->where(
                 'nomor_kamar',
@@ -29,10 +29,10 @@ class KamarController extends Controller
             );
         }
 
-        // Pagination 5 kamar per halaman
+        
         $kamars = $query->latest()->paginate(5)->withQueryString();
 
-        // Statistik seluruh kamar
+       
         $totalKamar = Kamar::count();
         $totalHarga = Kamar::sum('harga');
         $hargaTertinggi = Kamar::max('harga');
@@ -133,7 +133,7 @@ class KamarController extends Controller
 
     public function destroy(Kamar $kamar)
     {
-        // Hapus file foto dan thumbnail sebelum record dihapus
+        
         $this->hapusFoto($kamar->foto);
 
         $kamar->delete();
@@ -142,21 +142,17 @@ class KamarController extends Controller
             ->with('success', 'Kamar berhasil dihapus.');
     }
 
-    /**
-     * Simpan foto asli ke foto-kamar/ dan buat thumbnail 300x300
-     * di foto-kamar/thumbnails/ dengan nama file yang sama.
-     * Mengembalikan path foto asli untuk disimpan di database.
-     */
+   
 private function simpanFoto($file): string
 {
-    // Foto asli
+    
     $path = $file->store('foto-kamar', 'public');
 
-    // Thumbnail
+    
     $manager = new ImageManager(new Driver());
     $thumbnail = $manager->read($file->getRealPath())->cover(300, 300);
 
-    // Encode sesuai ekstensi file
+    
     $ekstensi = strtolower($file->getClientOriginalExtension());
 
     $hasil = match ($ekstensi) {
@@ -174,9 +170,7 @@ private function simpanFoto($file): string
 
     }
 
-    /**
-     * Hapus foto asli dan thumbnail dari storage (jika ada).
-     */
+    
     private function hapusFoto(?string $path): void
     {
         if (! $path) {
