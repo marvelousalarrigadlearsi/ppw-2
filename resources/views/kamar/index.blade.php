@@ -1,23 +1,3 @@
-Claude
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-Index.blade · PHP
  
 <!DOCTYPE html>
 <html lang="id">
