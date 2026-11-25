@@ -11,8 +11,12 @@ class SendLoginNotification
     {
         $request = request();
 
-        // Kirim hanya saat login lewat form (ada password), bukan saat sesi dipulihkan dari cookie "remember me".
-        if (! $request->isMethod('post') || ! $request->filled('password')) {
+        // Kirim hanya saat login lewat form (ada password) atau lewat callback Google,
+        // bukan saat sesi dipulihkan dari cookie "remember me".
+        $loginForm = $request->isMethod('post') && $request->filled('password');
+        $loginGoogle = $request->routeIs('google.callback');
+
+        if (! $loginForm && ! $loginGoogle) {
             return;
         }
 

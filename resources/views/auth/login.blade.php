@@ -30,6 +30,10 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div class="alert">{{ session('error') }}</div>
+            @endif
+
             @if ($errors->any())
                 <div class="alert">
                     Email atau password tidak valid. Periksa kembali data loginmu.
@@ -78,6 +82,18 @@
 
                 <button type="submit" class="primary-btn">Masuk ke Dashboard →</button>
             </form>
+
+            <div style="display:flex;align-items:center;gap:12px;margin:22px 0;color:#8b978f;font-size:12px;">
+                <span style="flex:1;height:1px;background:#dce5de;"></span>
+                atau
+                <span style="flex:1;height:1px;background:#dce5de;"></span>
+            </div>
+
+            <a href="{{ route('google.redirect') }}"
+               style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;padding:14px;border:1px solid #dce5de;border-radius:12px;background:white;color:#17251f;font-size:14px;font-weight:700;text-decoration:none;">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18" alt="Google">
+                Login dengan Google
+            </a>
 
             <div class="auth-switch">
                 Belum punya akun?

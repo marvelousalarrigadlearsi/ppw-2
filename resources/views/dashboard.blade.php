@@ -130,6 +130,12 @@
     </header>
 
     <main class="container">
+        @if (session('success'))
+            <div style="background:#e3f3e8;color:#1e4935;padding:13px 16px;border-radius:12px;margin-bottom:18px;font-size:14px;">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <section class="welcome">
             <small>Dashboard KosJos</small>
             <h1>Halo, {{ auth()->user()->name }}!</h1>
@@ -173,7 +179,23 @@
                 <a class="action-link" href="{{ route('kamar.index') }}">Mulai mengelola kos →</a>
             </div>
         </section>
-        
+
+        @if (auth()->user()->isAdmin())
+            <h2 class="section-title" id="notifikasi">Notifikasi</h2>
+
+            <section class="action-card" style="padding:0;overflow:hidden;">
+                <ul style="list-style:none;margin:0;padding:0;">
+                    @forelse ($notifikasi as $n)
+                        <li style="display:flex;justify-content:space-between;gap:12px;padding:14px 20px;border-bottom:1px solid #eef2ef;font-size:14px;{{ $n->read_at ? '' : 'font-weight:700;' }}">
+                            <span>{{ $n->data['pesan'] ?? 'Notifikasi' }}</span>
+                            <small style="color:#8b978f;font-weight:400;white-space:nowrap;">{{ $n->created_at->diffForHumans() }}</small>
+                        </li>
+                    @empty
+                        <li style="padding:14px 20px;color:#8b978f;font-size:14px;">Belum ada notifikasi.</li>
+                    @endforelse
+                </ul>
+            </section>
+        @endif
 
     </main>
 </body>
