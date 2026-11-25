@@ -3,10 +3,11 @@
 namespace Tests\Feature;
 
 use App\Jobs\KirimEmailSelamatDatang;
-use App\Jobs\SendLoginNotificationMailJob;
+use App\Mail\LoginBaruMail;
 use App\Models\User;
 use App\Notifications\UserBaruNotification;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Queue;
 use Laravel\Socialite\Facades\Socialite;
@@ -30,6 +31,7 @@ class GoogleLoginTest extends TestCase
     public function test_user_baru_bisa_login_dengan_google(): void
     {
         Queue::fake();
+        Mail::fake();
         Notification::fake();
 
         $admin = User::factory()->create(['level' => 'admin']);
@@ -45,13 +47,14 @@ class GoogleLoginTest extends TestCase
         ]);
 
         Queue::assertPushed(KirimEmailSelamatDatang::class);
-        Queue::assertPushed(SendLoginNotificationMailJob::class); // Tugas 3
+        Mail::assertQueued(LoginBaruMail::class, fn ($m) => $m->hasTo('mahasiswa@mail.ugm.ac.id') && $m->ip !== '' && $m->waktu !== ''); // Tugas 3
         Notification::assertSentTo($admin, UserBaruNotification::class);
     }
 
     public function test_email_di_luar_domain_kampus_ditolak(): void
     {
         Queue::fake();
+        Mail::fake();
         Notification::fake();
 
         $this->fakeGoogle('orang@gmail.com'); // Tugas 2
@@ -63,11 +66,13 @@ class GoogleLoginTest extends TestCase
         $this->assertGuest();
         $this->assertDatabaseMissing('users', ['email' => 'orang@gmail.com']);
         Queue::assertNothingPushed();
+        Mail::assertNothingQueued();
     }
 
     public function test_user_lama_yang_login_lagi_tidak_dianggap_user_baru(): void
     {
         Queue::fake();
+        Mail::fake();
         Notification::fake();
 
         User::factory()->create(['level' => 'admin']);
@@ -78,7 +83,7 @@ class GoogleLoginTest extends TestCase
 
         $this->assertDatabaseHas('users', ['email' => 'mahasiswa@mail.ugm.ac.id', 'google_id' => '1234567890']);
         Queue::assertNotPushed(KirimEmailSelamatDatang::class);
-        Queue::assertPushed(SendLoginNotificationMailJob::class);
+        Mail::assertQueued(LoginBaruMail::class);
         Notification::assertNothingSent();
     }
 

@@ -2,8 +2,9 @@
 
 namespace App\Listeners;
 
-use App\Jobs\SendLoginNotificationMailJob;
+use App\Mail\LoginBaruMail;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Mail;
 
 class SendLoginNotification
 {
@@ -28,12 +29,12 @@ class SendLoginNotification
 
         $waktu = now('Asia/Jakarta')->locale('id')->translatedFormat('d F Y, H:i') . ' WIB';
 
-        // Diproses di background oleh queue worker, jadi login tidak menunggu pengiriman email.
-        SendLoginNotificationMailJob::dispatch(
+        // LoginBaruMail memakai ShouldQueue, jadi email diproses di background oleh queue worker.
+        Mail::to($user->email)->send(new LoginBaruMail(
             $user,
             $waktu,
             (string) $request->ip(),
             (string) ($request->userAgent() ?: 'Tidak diketahui'),
-        );
+        ));
     }
 }

@@ -4,39 +4,37 @@ namespace App\Mail;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class LoginNotificationMail extends Mailable
+// Tugas 3: dikirim setiap kali user login. `ShouldQueue` membuat email
+// otomatis masuk antrean (diproses oleh `php artisan queue:work`).
+class LoginBaruMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public User $user;
-    public string $waktu;
-    public string $ip;
-    public string $perangkat;
-
-    public function __construct(User $user, string $waktu, string $ip, string $perangkat)
-    {
-        $this->user = $user;
-        $this->waktu = $waktu;
-        $this->ip = $ip;
-        $this->perangkat = $perangkat;
+    public function __construct(
+        public User $user,
+        public string $waktu,
+        public string $ip,
+        public string $perangkat,
+    ) {
     }
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Login ke ' . config('app.name') . ' berhasil',
+            subject: 'Login ke '.config('app.name').' berhasil',
         );
     }
 
     public function content(): Content
     {
         return new Content(
-            view: 'emails.login_notification',
+            view: 'emails.login-baru',
             with: [
                 'user' => $this->user,
                 'waktu' => $this->waktu,
